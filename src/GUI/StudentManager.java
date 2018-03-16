@@ -4,7 +4,12 @@
  * and open the template in the editor.
  */
 package GUI;
-import Components.Student;
+import components.Student;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import javax.swing.table.DefaultTableModel;
 /**
  *
@@ -18,12 +23,28 @@ public class StudentManager extends javax.swing.JFrame {
     public StudentManager() {
         initComponents();
         student = new Student(0, "", "", "");
+        populateTable();
     }
     
     private void populateTable(){
-        DefaultTableModel model = new DefaultTableModel();
-        model.setRowCount(0);
-        model.addRow(new Object[]{student.getName(), student.getGrade(), student.getRole()});
+        String filePath = "C:\\Users\\Necro\\Desktop\\text.txt";
+        File file = new File(filePath);
+        try {
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
+            
+            DefaultTableModel model = (DefaultTableModel)tbl_removeStudent.getModel();
+            model.setRowCount(0);
+            Object[] lines = br.lines().toArray();
+            
+            for (Object line : lines) {
+                String[] row = line.toString().split(" ");
+                model.addRow(row);
+            }
+        } catch (FileNotFoundException fnf) {
+            System.out.println("File not found: " + fnf.toString());
+        }
+        
     }
 
     /**
@@ -45,9 +66,9 @@ public class StudentManager extends javax.swing.JFrame {
         cbox_role = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
         btn_addStudent = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btn_removeStudent = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tbl_removeStudent = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -77,17 +98,26 @@ public class StudentManager extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Delete");
+        btn_removeStudent.setText("Delete");
+        btn_removeStudent.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_removeStudentActionPerformed(evt);
+            }
+        });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_removeStudent.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Name", "Grade", "Role"
+                "ID", "Name", "Role", "Grade"
             }
         ));
-        jScrollPane2.setViewportView(jTable1);
+        tbl_removeStudent.getTableHeader().setReorderingAllowed(false);
+        jScrollPane2.setViewportView(tbl_removeStudent);
+        if (tbl_removeStudent.getColumnModel().getColumnCount() > 0) {
+            tbl_removeStudent.getColumnModel().getColumn(0).setMaxWidth(30);
+        }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -95,7 +125,7 @@ public class StudentManager extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton2)
+                    .addComponent(btn_removeStudent)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btn_addStudent)
@@ -122,9 +152,9 @@ public class StudentManager extends javax.swing.JFrame {
                                     .addComponent(cbox_role, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(22, 22, 22)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
                             .addComponent(jLabel6))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -153,19 +183,44 @@ public class StudentManager extends javax.swing.JFrame {
                         .addComponent(btn_addStudent))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2))
+                .addComponent(btn_removeStudent))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_addStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addStudentActionPerformed
-        student.setStudentID(student.generateStudentID());
-        student.setName(txt_studentName.getText());
-        student.setGrade(cbox_grade.getSelectedItem().toString());
-        student.setRole(cbox_role.getSelectedItem().toString());
-        student.populateTextFile();
+            student.setName(txt_studentName.getText());
+            student.setGrade(cbox_grade.getSelectedItem().toString());
+            student.setRole(cbox_role.getSelectedItem().toString());
+            try{
+                student.setStudentID(Student.readLineNum("C:\\Users\\Necro\\Desktop\\text.txt"));
+            }catch(IOException ioe){
+                System.out.println("IO Exception: " + ioe.toString());
+            }
+            if(student.getStudentID() == 0){
+                System.out.println(student.getStudentID());
+                student.setStudentID(1);
+                System.out.println(student.getStudentID());
+            }
+            student.populateTextFile();
     }//GEN-LAST:event_btn_addStudentActionPerformed
+
+    private void btn_removeStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_removeStudentActionPerformed
+        int[] row = tbl_removeStudent.getSelectedRows();
+        String id, name, role, grade;
+        
+        //int rowValue;
+        for(int i = 0; i < tbl_removeStudent.getSelectedRowCount(); i++){
+            id = tbl_removeStudent.getModel().getValueAt(row[i], 0).toString();
+            name = tbl_removeStudent.getModel().getValueAt(row[i], 1).toString();
+            role = tbl_removeStudent.getModel().getValueAt(row[i], 2).toString();
+            grade = tbl_removeStudent.getModel().getValueAt(row[i], 3).toString();
+            //rowValue = Integer.valueOf((String) tbl_removeStudent.getModel().getValueAt(row[i], 0));
+            student.removeStudent(id, name, role, grade);
+        }
+        populateTable();
+    }//GEN-LAST:event_btn_removeStudentActionPerformed
 
     /**
      * @param args the command line arguments
@@ -204,9 +259,9 @@ public class StudentManager extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_addStudent;
+    private javax.swing.JButton btn_removeStudent;
     private javax.swing.JComboBox<String> cbox_grade;
     private javax.swing.JComboBox<String> cbox_role;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -214,7 +269,7 @@ public class StudentManager extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tbl_removeStudent;
     private javax.swing.JTextField txt_studentName;
     // End of variables declaration//GEN-END:variables
 }
