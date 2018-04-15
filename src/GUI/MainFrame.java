@@ -303,16 +303,7 @@ public class MainFrame extends javax.swing.JFrame {
                 finalRoles.add(storeRow);
             }
             
-            //get group
-            //remove group from overall
-            //check there are enough people for the group
-            //repeat
-            
             int numberOfGroups = getNumberOfGroups();
-            
-//            for(int i = 0; i < groupStore.size(); i++){
-//                finalRoles.remove(groupStore.get(i));
-//            }
             
             for(int i = 0; i < numberOfGroups; i++){
                 groupStore = sortIntoGroups(finalRoles);
@@ -339,6 +330,32 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         } 
+    }
+    
+    private void printGroupsToDesktop(){
+        try {
+            File file = new File(System.getProperty("user.home") + "/Desktop/groups.txt");
+            File groups = new File(path);
+            String storeLine;
+            
+            fr = new FileReader(groups);
+            br = new BufferedReader(fr);
+            
+            fw = new FileWriter(file);
+            bw = new BufferedWriter(fw);
+            
+            while((storeLine = br.readLine()) != null){
+                bw.write(storeLine + "\n");
+            }
+            
+            System.out.println("Done Writing");
+            
+            br.close();
+            bw.close();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private String parseStringForStudent(String possibleStudent){
@@ -619,9 +636,9 @@ public class MainFrame extends javax.swing.JFrame {
             fullString = student.buildString(id, name, role, grade, skillString);
             student.rewriteFile(fullString);
         }
+        populateTable();
         temp = table.getRowCount();
         lbl_totalNum.setText("" + temp);
-        populateTable();
     }//GEN-LAST:event_removeStudentButtonActionPerformed
 
     private void btn_commitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_commitActionPerformed
@@ -636,18 +653,9 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void generateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateButtonActionPerformed
-        //Sorts the table into best to worst
-        //student.skillBasedRewrite();
-        
-        //Gets size settings
-        //System.out.println(set.getGroupSize());
-        
-        //Get number of students allowed to be allocated to a role in a group
-        //System.out.println(set.getRoleNumber("Developer"));
-        //groupStudentsNoSort();
         
         groupStudentsNoSort();
-        
+        printGroupsToDesktop();
     }//GEN-LAST:event_generateButtonActionPerformed
 
     /**

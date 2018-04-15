@@ -7,6 +7,8 @@ package GUI;
 import Components.Student;
 import Components.Usability;
 import javax.swing.ButtonGroup;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -22,6 +24,7 @@ public class StudentManager extends javax.swing.JFrame {
     public StudentManager() {
         initComponents();
         student = new Student(0, "", 0, "", "");
+        roleValue = "Autofill";
         setupRadioGroup();
     }
     
@@ -510,14 +513,39 @@ public class StudentManager extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_closeActionPerformed
 
     private void btn_addStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addStudentActionPerformed
-        group.getSelection().getActionCommand();
-        student.setGrade(calculateGrade());
-        student.setName(studentNameInput.getText());
-        student.setStudentID(Integer.parseInt(studentNumberInput.getText()));
-        student.setRole(roleValue);
-        student.setSkillLevel(castSkillToString());
-        student.populateTextFile();
-        setTextEmpty();
+        String length;
+        
+        try {
+            group.getSelection().getActionCommand();
+            student.setGrade(calculateGrade());
+            if(!studentNameInput.getText().matches(".*\\d+.*")){
+                student.setName(studentNameInput.getText());
+                student.setStudentID(Integer.parseInt(studentNumberInput.getText()));
+                length = "" + student.getStudentID();
+                if(length.length() == 8){
+                    student.setRole(roleValue);
+                    student.setSkillLevel(castSkillToString());
+                    student.populateTextFile();
+                    setTextEmpty();
+                }else{
+                    JOptionPane optionPane = new JOptionPane("Student ID length incorrect, correct length is 8.", JOptionPane.ERROR_MESSAGE);
+                    JDialog dialog = optionPane.createDialog("Failure");
+                    dialog.setAlwaysOnTop(true);
+                    dialog.setVisible(true);
+                }                
+            }else{
+                JOptionPane optionPane = new JOptionPane("Student Name contains digits.", JOptionPane.ERROR_MESSAGE);
+                JDialog dialog = optionPane.createDialog("Failure");
+                dialog.setAlwaysOnTop(true);
+                dialog.setVisible(true);
+            }
+        } catch (NumberFormatException numberFormatException) {
+            JOptionPane optionPane = new JOptionPane("Student ID contains invalid characters.", JOptionPane.ERROR_MESSAGE);
+            JDialog dialog = optionPane.createDialog("Failure");
+            dialog.setAlwaysOnTop(true);
+            dialog.setVisible(true);
+            System.out.println("Number Format Exception: " + numberFormatException.toString());
+        }
     }//GEN-LAST:event_btn_addStudentActionPerformed
 
     private void rbtn_anyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbtn_anyActionPerformed
