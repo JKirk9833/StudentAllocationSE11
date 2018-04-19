@@ -20,11 +20,13 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import Components.Settings;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 /**
  *
  * @author Necro
  */
+
 public class MainFrame extends javax.swing.JFrame {
     Student student = new Student(1, "", 0, "", "");
     Settings set;
@@ -643,13 +645,13 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void btn_commitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_commitActionPerformed
         updateTextFile();
-        populateTable();
+        populateTable();        
     }//GEN-LAST:event_btn_commitActionPerformed
 
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
+        populateTable();
         temp = table.getRowCount();
         lbl_totalNum.setText("" + temp);
-        populateTable();
     }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void generateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateButtonActionPerformed

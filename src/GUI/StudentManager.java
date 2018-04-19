@@ -523,10 +523,17 @@ public class StudentManager extends javax.swing.JFrame {
                 student.setStudentID(Integer.parseInt(studentNumberInput.getText()));
                 length = "" + student.getStudentID();
                 if(length.length() == 8){
-                    student.setRole(roleValue);
-                    student.setSkillLevel(castSkillToString());
-                    student.populateTextFile();
-                    setTextEmpty();
+                    if(student.checkForExistingID("" + student.getStudentID()) == 1){
+                        JOptionPane optionPane = new JOptionPane("Student ID already exists, please remove or edit existing student.", JOptionPane.ERROR_MESSAGE);
+                        JDialog dialog = optionPane.createDialog("Failure");
+                        dialog.setAlwaysOnTop(true);
+                        dialog.setVisible(true);
+                    }else{
+                        student.setRole(roleValue);
+                        student.setSkillLevel(castSkillToString());
+                        student.populateTextFile();
+                        setTextEmpty();
+                    }
                 }else{
                     JOptionPane optionPane = new JOptionPane("Student ID length incorrect, correct length is 8.", JOptionPane.ERROR_MESSAGE);
                     JDialog dialog = optionPane.createDialog("Failure");

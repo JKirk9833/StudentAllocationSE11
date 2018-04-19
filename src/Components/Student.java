@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -410,6 +411,57 @@ public class Student {
         }
 
         return rows;
+    }
+    
+    public String filterID(String student){
+        if (student != null) {
+            String[] roleArr;
+            
+            roleArr = student.split("`");
+            student = roleArr[0];
+            
+            return student;
+        } else {
+            return "No Student";
+        }
+    }
+    
+    public String[] getAllStudentID(){
+        String[] storeAllID = new String[getNumOfRows()];
+        String storeRow;
+        
+        try {
+            file = new File(path);
+            fr = new FileReader(file);
+            br = new BufferedReader(fr);
+            int count = 0;
+            
+            while((storeRow = br.readLine()) != null){
+                storeAllID[count] = filterID(storeRow);
+                count++;
+            }
+            
+            br.close();
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Student.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Student.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return storeAllID;
+    }
+    
+    public int checkForExistingID(String studentID){
+        String[] allID = getAllStudentID();
+        int check = 0;
+        for(int i = 0; i < allID.length; i++){
+            if(allID[i] == null ? studentID == null : allID[i].equals(studentID)){
+                check = 1;
+            }
+        }
+        
+        return check;
     }
     
 }
